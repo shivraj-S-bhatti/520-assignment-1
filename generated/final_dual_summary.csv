@@ -1,0 +1,21 @@
+problem,model,strategy,k,successes,pass@k (0/1)
+cosine_similarity,google:gemini-2.0-flash,self_edit,1,1,1
+evaluate_rpn,google:gemini-2.0-flash,self_edit,1,1,1
+int_to_roman,google:gemini-2.0-flash,self_edit,1,1,1
+is_palindrome_sentence,google:gemini-2.0-flash,self_edit,1,1,1
+merge_intervals,google:gemini-2.0-flash,self_edit,1,1,1
+min_window_substring,google:gemini-2.0-flash,self_edit,1,1,1
+normalize_path,google:gemini-2.0-flash,self_edit,1,0,0
+parse_csv_line,google:gemini-2.0-flash,self_edit,1,1,1
+sudoku_is_valid,google:gemini-2.0-flash,self_edit,1,1,1
+top_k_frequent,google:gemini-2.0-flash,self_edit,1,0,0
+cosine_similarity,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+evaluate_rpn,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+int_to_roman,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+is_palindrome_sentence,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+merge_intervals,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+min_window_substring,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+normalize_path,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,0,0
+parse_csv_line,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+sudoku_is_valid,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1
+top_k_frequent,huggingface:deepseek-ai/DeepSeek-V3-0324,self_edit,1,1,1

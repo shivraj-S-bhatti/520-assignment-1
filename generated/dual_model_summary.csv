@@ -1,0 +1,21 @@
+problem,model,strategy,k,successes,pass@k (0/1)
+cosine_similarity,google:gemini-2.0-flash,self_edit,1,1,1
+evaluate_rpn,google:gemini-2.0-flash,self_edit,1,0,0
+int_to_roman,google:gemini-2.0-flash,self_edit,1,1,1
+is_palindrome_sentence,google:gemini-2.0-flash,self_edit,1,1,1
+merge_intervals,google:gemini-2.0-flash,self_edit,1,1,1
+min_window_substring,google:gemini-2.0-flash,self_edit,1,1,1
+normalize_path,google:gemini-2.0-flash,self_edit,1,0,0
+parse_csv_line,google:gemini-2.0-flash,self_edit,1,1,1
+sudoku_is_valid,google:gemini-2.0-flash,self_edit,1,1,1
+top_k_frequent,google:gemini-2.0-flash,self_edit,1,0,0
+cosine_similarity,openrouter:deepseek/deepseek-r1,self_edit,1,1,1
+evaluate_rpn,openrouter:deepseek/deepseek-r1,self_edit,1,1,1
+int_to_roman,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+is_palindrome_sentence,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+merge_intervals,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+min_window_substring,openrouter:deepseek/deepseek-r1,self_edit,1,1,1
+normalize_path,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+parse_csv_line,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+sudoku_is_valid,openrouter:deepseek/deepseek-r1,self_edit,1,0,0
+top_k_frequent,openrouter:deepseek/deepseek-r1,self_edit,1,1,1
