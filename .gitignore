@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage reports (keep structure, ignore HTML)
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# API keys and secrets (should never be committed)
+.env
+.env.local
+*.key
+*.pem
+secrets.json
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+summary_data.json
+__pycache__/
+
+# Test artifacts
+.pytest_cache/
+.coverage.*
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated data (keep structure)
+generated/*.jsonl
+generated/*.csv
+coverage_reports/**/htmlcov/
+

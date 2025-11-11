@@ -6,7 +6,8 @@ def top_k_frequent(nums: List[int], k: int) -> List[int]:
     """
     Return the k most frequent integers in nums.
     
-    BUG: Reversed tie-breaking comparison - larger number chosen instead of smaller.
+    NOTE: This is a buggy version for testing purposes.
+    Bug: Reversed tie-breaking comparison - larger number chosen instead of smaller.
     """
     if k < 1:
         raise ValueError("k must be at least 1")
@@ -17,17 +18,17 @@ def top_k_frequent(nums: List[int], k: int) -> List[int]:
     if k > num_unique:
         raise ValueError("k cannot be greater than the number of unique elements")
 
-    # BUG: Use positive num instead of negative - causes larger numbers to be preferred in ties
+    # Bug: Use positive num instead of negative - causes larger numbers to be preferred in ties
     heap = []
     for num, freq in counts.items():
-        heapq.heappush(heap, (freq, num))  # BUG: Don't negate num, so larger numbers come first
+        heapq.heappush(heap, (freq, num))
 
     top_k = []
     for _ in range(k):
         freq, num = heapq.heappop(heap)
         top_k.append(num)
     
-    # BUG: Reverse to get larger numbers first (wrong tie-breaking)
+    # Bug: Reverse to get larger numbers first (wrong tie-breaking)
     top_k.reverse()
 
     return top_k

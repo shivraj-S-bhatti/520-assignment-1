@@ -22,7 +22,7 @@ def top_k_frequent(nums: List[int], k: int) -> List[int]:
     # The heap stores (frequency, number) tuples.
     heap = []
     for num, freq in counts.items():
-        heapq.heappush(heap, (freq, -num))  # Negate num to get smaller number first in ties
+        heapq.heappush(heap, (freq, -num))
 
     top_k = []
     for _ in range(k):
