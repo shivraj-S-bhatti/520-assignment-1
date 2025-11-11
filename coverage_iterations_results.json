@@ -1,0 +1,50 @@
+{
+  "normalize_path": [
+    {
+      "iteration": 0,
+      "tests": [
+        "baseline"
+      ],
+      "line": 90.0,
+      "branch": 85.7
+    },
+    {
+      "iteration": 1,
+      "tests": [
+        "baseline",
+        "iteration_1"
+      ],
+      "line": 90.0,
+      "branch": 85.7
+    },
+    {
+      "iteration": 2,
+      "tests": [
+        "baseline",
+        "iteration_1",
+        "iteration_2"
+      ],
+      "line": 90.0,
+      "branch": 85.7
+    }
+  ],
+  "top_k_frequent": [
+    {
+      "iteration": 0,
+      "tests": [
+        "baseline"
+      ],
+      "line": 100.0,
+      "branch": 100.0
+    },
+    {
+      "iteration": 1,
+      "tests": [
+        "baseline",
+        "iteration_1"
+      ],
+      "line": 100.0,
+      "branch": 100.0
+    }
+  ]
+}

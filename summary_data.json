@@ -1,0 +1,132 @@
+[
+  {
+    "problem": "cosine_similarity",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "evaluate_rpn",
+    "gemini": {
+      "pass": 100.0,
+      "line": 81.5,
+      "branch": 77.8
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "int_to_roman",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "is_palindrome_sentence",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "merge_intervals",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "min_window_substring",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "normalize_path",
+    "gemini": {
+      "pass": 0.0,
+      "line": 90.0,
+      "branch": 85.7
+    },
+    "deepseek": {
+      "pass": 0.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "parse_csv_line",
+    "gemini": {
+      "pass": 100.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "sudoku_is_valid",
+    "gemini": {
+      "pass": 100.0,
+      "line": 96.4,
+      "branch": 96.4
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  },
+  {
+    "problem": "top_k_frequent",
+    "gemini": {
+      "pass": 0.0,
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "deepseek": {
+      "pass": 100.0,
+      "line": 0.0,
+      "branch": 0.0
+    }
+  }
+]

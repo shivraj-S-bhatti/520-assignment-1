@@ -1,0 +1,82 @@
+[
+  {
+    "problem": "cosine_similarity",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "evaluate_rpn",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 81.48,
+    "branch_coverage": 77.78,
+    "success": true
+  },
+  {
+    "problem": "int_to_roman",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "is_palindrome_sentence",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "merge_intervals",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "min_window_substring",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "normalize_path",
+    "tests_passed": 0,
+    "tests_failed": 1,
+    "line_coverage": 90.0,
+    "branch_coverage": 85.71,
+    "success": false
+  },
+  {
+    "problem": "parse_csv_line",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": true
+  },
+  {
+    "problem": "sudoku_is_valid",
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "line_coverage": 96.43,
+    "branch_coverage": 96.43,
+    "success": true
+  },
+  {
+    "problem": "top_k_frequent",
+    "tests_passed": 0,
+    "tests_failed": 1,
+    "line_coverage": 100.0,
+    "branch_coverage": 100.0,
+    "success": false
+  }
+]
