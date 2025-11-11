@@ -1,3 +1,6 @@
 openai
 anthropic
 google-generativeai
+pytest
+pytest-cov
+coverage

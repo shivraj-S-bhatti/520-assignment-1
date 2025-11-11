@@ -1,0 +1,71 @@
+{
+  "selected": [
+    "top_k_frequent",
+    "parse_csv_line"
+  ],
+  "all_metrics": [
+    {
+      "problem": "top_k_frequent",
+      "line_coverage": 91.67,
+      "branch_coverage": 83.33,
+      "gap": 8.340000000000003,
+      "metric": 7.645278000000003
+    },
+    {
+      "problem": "parse_csv_line",
+      "line_coverage": 95.83,
+      "branch_coverage": 90.0,
+      "gap": 5.829999999999998,
+      "metric": 5.586888999999998
+    },
+    {
+      "problem": "evaluate_rpn",
+      "line_coverage": 80.77,
+      "branch_coverage": 77.78,
+      "gap": 2.989999999999995,
+      "metric": 2.4150229999999957
+    },
+    {
+      "problem": "cosine_similarity",
+      "line_coverage": 100.0,
+      "branch_coverage": 100.0,
+      "gap": 0.0,
+      "metric": 0.0
+    },
+    {
+      "problem": "int_to_roman",
+      "line_coverage": 100.0,
+      "branch_coverage": 100.0,
+      "gap": 0.0,
+      "metric": 0.0
+    },
+    {
+      "problem": "is_palindrome_sentence",
+      "line_coverage": 100.0,
+      "branch_coverage": 100.0,
+      "gap": 0.0,
+      "metric": 0.0
+    },
+    {
+      "problem": "merge_intervals",
+      "line_coverage": 100.0,
+      "branch_coverage": 100.0,
+      "gap": 0.0,
+      "metric": 0.0
+    },
+    {
+      "problem": "min_window_substring",
+      "line_coverage": 100.0,
+      "branch_coverage": 100.0,
+      "gap": 0.0,
+      "metric": 0.0
+    },
+    {
+      "problem": "sudoku_is_valid",
+      "line_coverage": 96.43,
+      "branch_coverage": 96.43,
+      "gap": 0.0,
+      "metric": 0.0
+    }
+  ]
+}
