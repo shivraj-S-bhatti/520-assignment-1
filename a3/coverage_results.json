@@ -1,0 +1,34 @@
+{
+  "normalize_path": {
+    "baseline": {
+      "line": 90.0,
+      "branch": 85.7
+    },
+    "new": {
+      "problem": "normalize_path",
+      "line_coverage": 90.0,
+      "branch_coverage": 85.71,
+      "success": true
+    },
+    "improvement": {
+      "line": 0.0,
+      "branch": 0.009999999999990905
+    }
+  },
+  "evaluate_rpn": {
+    "baseline": {
+      "line": 81.5,
+      "branch": 77.8
+    },
+    "new": {
+      "problem": "evaluate_rpn",
+      "line_coverage": 100.0,
+      "branch_coverage": 94.44,
+      "success": true
+    },
+    "improvement": {
+      "line": 18.5,
+      "branch": 16.64
+    }
+  }
+}

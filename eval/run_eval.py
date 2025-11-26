@@ -9,7 +9,7 @@ BASE = pathlib.Path(__file__).resolve().parents[1]
 PROBLEMS_DIR = BASE / "problems"
 TESTS_DIR = BASE / "tests"
 PROMPTS_DIR = BASE / "prompts"
-OUT_DIR = BASE / "generated"
+OUT_DIR = BASE / "a1" / "generated"
 
 # Load strategy templates segments
 full = (PROMPTS_DIR / "strategy_templates.md").read_text()
@@ -153,7 +153,7 @@ def main():
         w.writerow(["problem","model","strategy","k","successes","pass@k (0/1)"])
         w.writerows(summary_rows)
 
-    print("Done. See generated/results.jsonl and generated/summary.csv")
+    print("Done. See a1/generated/results.jsonl and a1/generated/summary.csv")
 
 if __name__ == "__main__":
     main()

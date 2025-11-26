@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Assignment 3: Specification-Guided Test Improvement</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: #333;
+        }
+        h1 {
+            border-bottom: 3px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #666;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        h4 {
+            color: #666;
+            margin-top: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #007acc;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            display: block;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: block;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        blockquote {
+            border-left: 4px solid #ccc;
+            margin: 20px 0;
+            padding-left: 20px;
+            color: #666;
+        }
+        @media print {
+            body {
+                padding: 20px;
+            }
+            img {
+                page-break-inside: avoid;
+            }
+            pre {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Assignment 3: Specification-Guided Test Improvement</h1>
+<p><strong>Submission by:</strong> Shivraj Bhatti</p>
+<h2>Overview</h2>
+<p>This assignment explores how formal specifications, automatically generated from natural language problem statements, can guide test improvement. We selected two problems from Assignment 2 Part 1 where testing coverage had room for improvement:</p>
+<ol>
+<li><strong>normalize_path</strong> - Baseline: 90.0% line, 85.7% branch</li>
+<li><strong>evaluate_rpn</strong> - Baseline: 81.5% line, 77.8% branch</li>
+</ol>
+<h2>Part 1: Generate, Evaluate, and Refine Specifications</h2>
+<h3>Problem 1: normalize_path</h3>
+<h4>LLM Prompt for Specification Generation</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">You</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">helping</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">specification</span><span class="o">-</span><span class="n">guided</span><span class="w"> </span><span class="n">testing</span><span class="p">.</span>
+
+<span class="n">Problem</span><span class="w"> </span><span class="k">description</span><span class="o">:</span>
+<span class="n">Implement</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="n">normalize_path</span><span class="p">(</span><span class="k">path</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">normalizes</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">Unix</span><span class="o">-</span><span class="n">style</span><span class="w"> </span><span class="n">filesystem</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="k">string</span><span class="p">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="n">must</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Treat</span><span class="w"> </span><span class="s2">&quot;.&quot;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">no</span><span class="o">-</span><span class="n">op</span><span class="w"> </span><span class="n">segment</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Treat</span><span class="w"> </span><span class="s2">&quot;..&quot;</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s2">&quot;go to parent directory&quot;</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">possible</span><span class="w"> </span><span class="p">(</span><span class="k">for</span><span class="w"> </span><span class="n">absolute</span><span class="w"> </span><span class="n">paths</span><span class="p">,</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="n">above</span><span class="w"> </span><span class="n">root</span><span class="p">).</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Collapse</span><span class="w"> </span><span class="n">repeated</span><span class="w"> </span><span class="n">slashes</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="w"> </span><span class="n">→</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">).</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Preserve</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">leading</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">absolute</span><span class="w"> </span><span class="n">paths</span><span class="p">;</span><span class="w"> </span><span class="n">keep</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="n">paths</span><span class="w"> </span><span class="n">relative</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Ensure</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="k">trailing</span><span class="w"> </span><span class="n">slash</span><span class="p">,</span><span class="w"> </span><span class="k">except</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">normalized</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Preserve</span><span class="w"> </span><span class="k">empty</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="n">paths</span><span class="w"> </span><span class="n">appropriately</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="s2">&quot;.&quot;</span><span class="p">).</span>
+
+<span class="n">Method</span><span class="w"> </span><span class="n">signature</span><span class="o">:</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">normalize_path</span><span class="p">(</span><span class="k">path</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">str</span>
+
+<span class="n">Task</span><span class="o">:</span>
+<span class="k">Write</span><span class="w"> </span><span class="n">formal</span><span class="w"> </span><span class="n">specifications</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">assertions</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">describe</span><span class="w"> </span><span class="n">necessary</span><span class="w"> </span><span class="n">properties</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">correct</span><span class="w"> </span><span class="n">result</span><span class="p">.</span>
+
+<span class="n">Let</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`path`</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="k">string</span><span class="p">,</span>
+<span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`res`</span><span class="w"> </span><span class="n">denote</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">correct</span><span class="w"> </span><span class="n">normalized</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="p">(</span><span class="k">do</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">call</span><span class="w"> </span><span class="n">normalize_path</span><span class="w"> </span><span class="n">inside</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">assertions</span><span class="p">).</span>
+
+<span class="n">Constraints</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Do</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">call</span><span class="w"> </span><span class="n">normalize_path</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">any</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">implementation</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">assertions</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Do</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="p">,</span><span class="w"> </span><span class="n">randomness</span><span class="p">,</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="kt">time</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="k">string</span><span class="o">/</span><span class="n">sequence</span><span class="w"> </span><span class="n">logic</span><span class="p">,</span><span class="w"> </span><span class="n">arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">operations</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Express</span><span class="w"> </span><span class="k">global</span><span class="w"> </span><span class="n">semantic</span><span class="w"> </span><span class="n">properties</span><span class="w"> </span><span class="n">such</span><span class="w"> </span><span class="k">as</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">Behavior</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">absolute</span><span class="w"> </span><span class="n">vs</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="n">paths</span><span class="p">.</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">Elimination</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="s2">&quot;.&quot;</span><span class="w"> </span><span class="n">segments</span><span class="p">.</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">Parent</span><span class="o">-</span><span class="k">directory</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">behavior</span><span class="p">.</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">Rules</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">trailing</span><span class="w"> </span><span class="n">slash</span><span class="p">.</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">Idempotence</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="n">normalized</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">already</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="n">form</span><span class="p">).</span>
+
+<span class="n">Generate</span><span class="w"> </span><span class="n">6–8</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n n-Quoted">`assert`</span><span class="w"> </span><span class="n">statements</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="n n-Quoted">`path`</span><span class="p">,</span><span class="w"> </span><span class="n n-Quoted">`res`</span><span class="p">,</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">helper</span><span class="w"> </span><span class="k">variables</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">needed</span><span class="p">.</span>
+<span class="k">Return</span><span class="w"> </span><span class="k">ONLY</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">assertion</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="k">lines</span><span class="p">,</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">prose</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">explanations</span><span class="p">.</span>
+</code></pre></div>
+
+<h4>Generated Assertions (Before Correction)</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Absolute paths preserve leading slash</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+
+<span class="c1"># 2. Relative paths remain relative (no leading slash)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="ow">not</span> <span class="n">res</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+
+<span class="c1"># 3. No trailing slash except for root</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">res</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">))</span>
+
+<span class="c1"># 4. Collapse multiple slashes</span>
+<span class="k">assert</span> <span class="p">(</span><span class="s1">&#39;//&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">)</span>
+
+<span class="c1"># 5. Eliminate &#39;.&#39; segments (they don&#39;t appear in normalized form)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">res</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="c1"># 6. Parent directory behavior: &#39;..&#39; at start of relative path is preserved</span>
+<span class="k">assert</span> <span class="p">(</span><span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+
+<span class="c1"># 7. Idempotence: normalizing a normalized path doesn&#39;t change it</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">path</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 8. Empty or &#39;.&#39; input results in &#39;.&#39; or empty</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">res</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span><span class="n">res</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">res</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</code></pre></div>
+
+<h4>Specification Accuracy Analysis</h4>
+<p><strong>Accuracy Rate</strong>: 4/8 = <strong>50.0%</strong> (4 correct, 4 incorrect)</p>
+<p>Correct assertions: 1, 2, 3, 8</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Issue</th>
+<th>Corrected Assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>Does not correctly account for absolute paths starting with <code>/</code>; fails to exclude the leading slash from the check</td>
+<td><code>if res.startswith('/'): assert ('//' not in res[1:]) else: assert ('//' not in res)</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Does not filter empty segments properly; <code>res.split('/')</code> includes empty strings that should be excluded</td>
+<td><code>parts = [p for p in res.split('/') if p]; assert ('.' not in parts or res == '.')</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Does not correctly capture '..' behavior for relative paths; oversimplifies the condition for when '..' segments are preserved</td>
+<td><code>if not path.startswith('/') and path.split('/')[0] == '..': assert (res.startswith('..') or '/' not in res or res.count('/') &lt; path.count('/'))</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Weak property for idempotence; <code>res.count('/') &lt;= path.count('/') + 1</code> is too permissive and doesn't account for segment elimination</td>
+<td><code>path_segments = [p for p in path.split('/') if p and p != '.']; res_segments = [p for p in res.split('/') if p]; assert (len(res_segments) &lt;= len(path_segments) + 1)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The LLM produced only moderately accurate specifications (50%) for <code>normalize_path</code>. Many incorrect assertions mis-handled corner cases, particularly around '..' resolution at the root and the nuanced semantics of relative path normalization. The subtle distinctions between absolute and relative path handling, combined with edge cases like empty segments and trailing slashes, proved challenging for the LLM to capture precisely without calling the implementation.</p>
+<h3>Problem 2: evaluate_rpn</h3>
+<h4>LLM Prompt for Specification Generation</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">You</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">helping</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">specification</span><span class="o">-</span><span class="n">guided</span><span class="w"> </span><span class="n">testing</span><span class="p">.</span>
+
+<span class="n">Problem</span><span class="w"> </span><span class="k">description</span><span class="o">:</span>
+<span class="n">Implement</span><span class="w"> </span><span class="n">evaluate_rpn</span><span class="p">(</span><span class="n">tokens</span><span class="o">:</span><span class="w"> </span><span class="k">List</span><span class="err">[</span><span class="n">str</span><span class="err">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">evaluates</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">Reverse</span><span class="w"> </span><span class="n">Polish</span><span class="w"> </span><span class="n">Notation</span><span class="p">.</span>
+
+<span class="n">Details</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">list</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">strings</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Valid</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="n">are</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="n">literals</span><span class="p">,</span><span class="w"> </span><span class="n">possibly</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">leading</span><span class="w"> </span><span class="n">minus</span><span class="w"> </span><span class="nf">sign</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="w"> </span><span class="s2">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-7&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">operators</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">evaluated</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">stack</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="k">number</span><span class="w"> </span><span class="n">pushes</span><span class="w"> </span><span class="k">one</span><span class="w"> </span><span class="k">value</span><span class="p">.</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">operator</span><span class="w"> </span><span class="n">pops</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">top</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="n">operands</span><span class="w"> </span><span class="p">(</span><span class="k">left</span><span class="p">,</span><span class="w"> </span><span class="k">right</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">pushes</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">result</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Division</span><span class="w"> </span><span class="n">uses</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="n">division</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">truncation</span><span class="w"> </span><span class="n">toward</span><span class="w"> </span><span class="n">zero</span><span class="p">,</span><span class="w"> </span><span class="n">equivalent</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">integers</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mf">0.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">well</span><span class="o">-</span><span class="n">formed</span><span class="w"> </span><span class="n">RPN</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="n">must</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="k">never</span><span class="w"> </span><span class="k">require</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">operands</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">currently</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">stack</span><span class="p">,</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="k">one</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span>
+
+<span class="n">Method</span><span class="w"> </span><span class="n">signature</span><span class="o">:</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">evaluate_rpn</span><span class="p">(</span><span class="n">tokens</span><span class="o">:</span><span class="w"> </span><span class="k">List</span><span class="err">[</span><span class="n">str</span><span class="err">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">int</span>
+
+<span class="n">Task</span><span class="o">:</span>
+<span class="k">Write</span><span class="w"> </span><span class="n">formal</span><span class="w"> </span><span class="n">specifications</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">assertions</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">describe</span><span class="w"> </span><span class="n">necessary</span><span class="w"> </span><span class="n">properties</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">correct</span><span class="w"> </span><span class="n">result</span><span class="p">.</span>
+
+<span class="n">Let</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`tokens`</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="k">list</span><span class="p">,</span>
+<span class="o">-</span><span class="w"> </span><span class="n n-Quoted">`res`</span><span class="w"> </span><span class="n">denote</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">mathematically</span><span class="w"> </span><span class="n">correct</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">evaluating</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">RPN</span><span class="w"> </span><span class="n">expression</span><span class="p">.</span>
+
+<span class="n">Constraints</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Do</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">call</span><span class="w"> </span><span class="n">evaluate_rpn</span><span class="w"> </span><span class="n">inside</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">assertions</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Do</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="p">,</span><span class="w"> </span><span class="n">randomness</span><span class="p">,</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="kt">time</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">arithmetic</span><span class="p">,</span><span class="w"> </span><span class="n">sequence</span><span class="w"> </span><span class="n">operations</span><span class="p">,</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">logic</span><span class="p">.</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Specifications</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">capture</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="n">domain</span><span class="w"> </span><span class="n">constraints</span><span class="p">,</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">stack</span><span class="o">-</span><span class="n">depth</span><span class="w"> </span><span class="n">discipline</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">well</span><span class="o">-</span><span class="n">formed</span><span class="w"> </span><span class="n">inputs</span><span class="p">,</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">truncation</span><span class="o">-</span><span class="n">toward</span><span class="o">-</span><span class="n">zero</span><span class="w"> </span><span class="n">semantics</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">division</span><span class="p">,</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">correct</span><span class="w"> </span><span class="n">behavior</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">simple</span><span class="w"> </span><span class="n">examples</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span><span class="w"> </span><span class="err">[</span><span class="s2">&quot;2&quot;</span><span class="p">,</span><span class="s2">&quot;3&quot;</span><span class="p">,</span><span class="s2">&quot;+&quot;</span><span class="err">]</span><span class="w"> </span><span class="n">gives</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">necessary</span><span class="w"> </span><span class="n">conditions</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">invalid</span><span class="w"> </span><span class="n">expressions</span><span class="w"> </span><span class="p">(</span><span class="n">stack</span><span class="w"> </span><span class="n">underflow</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">leftover</span><span class="w"> </span><span class="k">values</span><span class="p">).</span>
+
+<span class="n">Generate</span><span class="w"> </span><span class="n">6–8</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n n-Quoted">`assert`</span><span class="w"> </span><span class="n">statements</span><span class="w"> </span><span class="k">over</span><span class="w"> </span><span class="n n-Quoted">`tokens`</span><span class="p">,</span><span class="w"> </span><span class="n n-Quoted">`res`</span><span class="p">,</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">helper</span><span class="w"> </span><span class="k">variables</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">needed</span><span class="p">.</span>
+<span class="k">Return</span><span class="w"> </span><span class="k">ONLY</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">assertion</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="k">lines</span><span class="p">,</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">prose</span><span class="p">.</span>
+</code></pre></div>
+
+<h4>Generated Assertions (Before Correction)</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Simple addition: [&quot;2&quot;, &quot;3&quot;, &quot;+&quot;] gives 5</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">res</span> <span class="o">==</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># 2. Stack discipline: number of numbers - number of operators = 1 for valid RPN</span>
+<span class="n">num_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span>
+<span class="n">op_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">num_count</span> <span class="o">-</span> <span class="n">op_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 3. Division truncates toward zero: [7, 3, /] gives 2, not 2.33</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">res</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 4. Negative division: [-7, 3, /] gives -2 (truncate toward zero)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-7&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">res</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 5. Mixed operations: [&quot;2&quot;, &quot;3&quot;, &quot;+&quot;, &quot;4&quot;, &quot;*&quot;] gives 20</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">tokens</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">res</span> <span class="o">==</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># 6. Stack underflow: if operators &gt; numbers - 1, expression is invalid</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">op_count</span> <span class="o">&lt;=</span> <span class="n">num_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 7. Token domain: all tokens are either integers or operators</span>
+<span class="n">valid_tokens</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">valid_tokens</span><span class="p">)</span>
+
+<span class="c1"># 8. Result is integer</span>
+<span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+</code></pre></div>
+
+<h4>Specification Accuracy Analysis</h4>
+<p><strong>Accuracy Rate</strong>: 6/8 = <strong>75.0%</strong> (6 correct, 2 incorrect)</p>
+<p>Correct assertions: 1, 3, 4, 5, 7, 8</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Issue</th>
+<th>Corrected Assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>Does not correctly count negative numbers; <code>t not in ["+", "-", "*", "/"]</code> incorrectly treats "-" as a number when it's an operator</td>
+<td><code>num_count = sum(1 for t in tokens if t.lstrip('-').isdigit()); op_count = sum(1 for t in tokens if t in ["+", "-", "*", "/"]); assert (num_count - op_count == 1)</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Vacuous condition for invalid expressions; mixes valid and invalid cases. Cannot assert on <code>res</code> for invalid expressions since the function raises ValueError</td>
+<td><code>if op_count == num_count - 1: assert (True) else: pass</code></td>
+</tr>
+</tbody>
+</table>
+<p>The LLM produced moderately accurate specifications (75%) for <code>evaluate_rpn</code>. The main issues were under-specified RPN validity rules, particularly around distinguishing between the "-" operator and negative number tokens, and the challenge of expressing properties about invalid expressions that raise exceptions rather than returning values.</p>
+<h3>Part 1 Summary</h3>
+<p>The LLM produced only moderately accurate specifications (50% for <code>normalize_path</code>, 75% for <code>evaluate_rpn</code>). Many incorrect assertions mis-handled corner cases: <code>normalize_path</code> specifications struggled with <code>..</code> behavior at root and relative path semantics, while <code>evaluate_rpn</code> specifications had difficulty distinguishing operators from negative numbers and expressing properties about invalid expressions that raise exceptions. This middling spec quality motivates the need for manual refinement and spec-guided tests in Part 2.</p>
+<h2>Part 2: Use Specifications to Guide Test Improvement</h2>
+<h3>normalize_path – Spec-guided test generation prompt</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">You</span> <span class="n">are</span> <span class="n">now</span> <span class="n">given</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">CORRECTED</span> <span class="n">formal</span> <span class="n">specifications</span> <span class="k">for</span> <span class="n">normalize_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="err">→</span> <span class="nb">str</span><span class="o">.</span> <span class="n">These</span> <span class="n">specs</span> <span class="n">describe</span> <span class="n">properties</span> <span class="n">such</span> <span class="k">as</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">absolute</span> <span class="n">vs</span> <span class="n">relative</span> <span class="n">behavior</span><span class="p">,</span>
+<span class="o">-</span> <span class="n">elimination</span> <span class="n">of</span> <span class="s2">&quot;.&quot;</span> <span class="n">segments</span> <span class="ow">and</span> <span class="n">collapse</span> <span class="n">of</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span>
+<span class="o">-</span> <span class="n">behavior</span> <span class="n">of</span> <span class="s2">&quot;..&quot;</span> <span class="k">with</span> <span class="ow">and</span> <span class="n">without</span> <span class="n">a</span> <span class="n">parent</span> <span class="n">segment</span><span class="p">,</span>
+<span class="o">-</span> <span class="n">rules</span> <span class="k">for</span> <span class="n">trailing</span> <span class="n">slash</span> <span class="p">(</span><span class="n">only</span> <span class="s2">&quot;/&quot;</span> <span class="n">may</span> <span class="n">end</span> <span class="k">with</span> <span class="n">a</span> <span class="n">slash</span><span class="p">),</span>
+<span class="o">-</span> <span class="n">idempotence</span> <span class="n">of</span> <span class="n">normalization</span><span class="o">.</span>
+
+<span class="n">Using</span> <span class="n">ONLY</span> <span class="n">these</span> <span class="n">corrected</span> <span class="n">specifications</span> <span class="p">(</span><span class="n">do</span> <span class="ow">not</span> <span class="n">look</span> <span class="n">at</span> <span class="n">coverage</span> <span class="n">information</span><span class="p">),</span> <span class="n">generate</span> <span class="n">pytest</span> <span class="n">unit</span> <span class="n">tests</span> <span class="k">for</span> <span class="n">normalize_path</span><span class="o">.</span>
+
+<span class="n">Requirements</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Use</span> <span class="n">pytest</span> <span class="n">style</span><span class="p">,</span> <span class="ow">not</span> <span class="n">unittest</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Import</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a2.src.normalize_path</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="p">,</span> <span class="err">`</span><span class="kn">from</span><span class="w"> </span><span class="nn">a2.src.normalize_path</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_path</span><span class="err">`</span><span class="p">)</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Each</span> <span class="n">test</span> <span class="n">must</span> <span class="n">be</span> <span class="n">named</span> <span class="err">`</span><span class="n">test_norm_</span><span class="o">&lt;</span><span class="n">short_description</span><span class="o">&gt;</span><span class="err">`</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Cover</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">simple</span> <span class="n">absolute</span> <span class="ow">and</span> <span class="n">simple</span> <span class="n">relative</span> <span class="n">cases</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">paths</span> <span class="k">with</span> <span class="n">multiple</span> <span class="s2">&quot;..&quot;</span> <span class="n">segments</span> <span class="p">(</span><span class="n">including</span> <span class="n">when</span> <span class="n">they</span> <span class="n">would</span> <span class="n">go</span> <span class="s2">&quot;above root&quot;</span><span class="p">),</span>
+  <span class="o">-</span> <span class="n">combinations</span> <span class="n">of</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="ow">and</span> <span class="n">multiple</span> <span class="n">slashes</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">empty</span> <span class="n">string</span> <span class="o">/</span> <span class="s2">&quot;.&quot;</span> <span class="o">/</span> <span class="s2">&quot;./&quot;</span> <span class="n">cases</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">the</span> <span class="n">special</span> <span class="n">case</span> <span class="n">where</span> <span class="n">the</span> <span class="n">result</span> <span class="ow">is</span> <span class="n">exactly</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span>
+
+<span class="n">Produce</span> <span class="mi">6</span><span class="err">–</span><span class="mi">10</span> <span class="n">tests</span> <span class="ow">in</span> <span class="n">total</span><span class="o">.</span>
+<span class="n">Avoid</span> <span class="n">redundant</span> <span class="n">tests</span> <span class="n">that</span> <span class="n">clearly</span> <span class="n">exercise</span> <span class="n">the</span> <span class="n">same</span> <span class="n">behavior</span><span class="p">;</span> <span class="n">prefer</span> <span class="n">parametrization</span> <span class="n">when</span> <span class="n">multiple</span> <span class="n">inputs</span> <span class="n">share</span> <span class="n">one</span> <span class="nb">property</span><span class="o">.</span>
+<span class="n">Return</span> <span class="n">ONLY</span> <span class="n">valid</span> <span class="n">Python</span> <span class="n">test</span> <span class="n">code</span><span class="o">.</span>
+</code></pre></div>
+
+<h3>evaluate_rpn – Spec-guided test generation prompt</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">You</span> <span class="n">are</span> <span class="n">now</span> <span class="n">given</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">CORRECTED</span> <span class="n">formal</span> <span class="n">specifications</span> <span class="k">for</span> <span class="n">evaluate_rpn</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="o">.</span> <span class="n">These</span> <span class="n">specs</span> <span class="n">describe</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">constraints</span> <span class="n">on</span> <span class="n">valid</span> <span class="n">tokens</span><span class="p">,</span>
+<span class="o">-</span> <span class="n">stack</span> <span class="n">discipline</span> <span class="p">(</span><span class="n">never</span> <span class="n">negative</span> <span class="n">depth</span><span class="p">,</span> <span class="n">ends</span> <span class="n">at</span> <span class="mi">1</span><span class="p">),</span>
+<span class="o">-</span> <span class="n">truncation</span><span class="o">-</span><span class="n">toward</span><span class="o">-</span><span class="n">zero</span> <span class="k">for</span> <span class="n">division</span><span class="p">,</span>
+<span class="o">-</span> <span class="n">necessary</span> <span class="n">conditions</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">expressions</span> <span class="p">(</span><span class="n">stack</span> <span class="n">underflow</span><span class="p">,</span> <span class="n">extra</span> <span class="n">operands</span><span class="p">),</span>
+<span class="o">-</span> <span class="n">basic</span> <span class="n">arithmetic</span> <span class="n">semantics</span><span class="o">.</span>
+
+<span class="n">Using</span> <span class="n">only</span> <span class="n">these</span> <span class="n">corrected</span> <span class="n">specifications</span> <span class="p">(</span><span class="n">do</span> <span class="ow">not</span> <span class="n">reference</span> <span class="n">coverage</span> <span class="ow">or</span> <span class="n">branches</span><span class="p">),</span> <span class="n">generate</span> <span class="n">pytest</span> <span class="n">unit</span> <span class="n">tests</span> <span class="k">for</span> <span class="n">evaluate_rpn</span><span class="o">.</span>
+
+<span class="n">Requirements</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Use</span> <span class="n">pytest</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Import</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a2.src.evaluate_rpn</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="p">,</span> <span class="err">`</span><span class="kn">from</span><span class="w"> </span><span class="nn">a2.src.evaluate_rpn</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_rpn</span><span class="err">`</span><span class="p">)</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Name</span> <span class="n">tests</span> <span class="err">`</span><span class="n">test_rpn_</span><span class="o">&lt;</span><span class="n">short_description</span><span class="o">&gt;</span><span class="err">`</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">Include</span> <span class="n">tests</span> <span class="k">for</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">a</span> <span class="n">simple</span> <span class="n">addition</span> <span class="n">expression</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">a</span> <span class="n">mixed</span> <span class="n">expression</span> <span class="k">with</span> <span class="n">multiple</span> <span class="n">operators</span> <span class="ow">and</span> <span class="n">negative</span> <span class="n">numbers</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">positive</span> <span class="ow">and</span> <span class="n">negative</span> <span class="n">division</span> <span class="n">where</span> <span class="n">truncation</span> <span class="n">toward</span> <span class="n">zero</span> <span class="n">matters</span><span class="p">,</span>
+  <span class="o">-</span> <span class="n">clearly</span> <span class="n">invalid</span> <span class="n">RPN</span> <span class="n">expressions</span> <span class="n">that</span> <span class="n">should</span> <span class="k">raise</span> <span class="n">an</span> <span class="n">error</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="p">,</span> <span class="n">stack</span> <span class="n">underflow</span><span class="p">,</span> <span class="n">extra</span> <span class="n">operands</span><span class="p">),</span>
+  <span class="o">-</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">more</span> <span class="nb">complex</span> <span class="n">valid</span> <span class="n">expression</span> <span class="n">that</span> <span class="n">combines</span> <span class="mi">3</span><span class="o">+</span> <span class="n">operators</span><span class="o">.</span>
+
+<span class="n">Aim</span> <span class="k">for</span> <span class="n">about</span> <span class="mi">6</span><span class="err">–</span><span class="mi">10</span> <span class="n">tests</span><span class="o">.</span> <span class="n">Use</span> <span class="n">parametrization</span> <span class="n">when</span> <span class="n">several</span> <span class="n">inputs</span> <span class="n">share</span> <span class="n">one</span> <span class="nb">property</span><span class="o">.</span>
+<span class="n">Return</span> <span class="n">ONLY</span> <span class="n">Python</span> <span class="n">test</span> <span class="n">code</span><span class="o">.</span>
+</code></pre></div>
+
+<h3>Generated Tests</h3>
+<h4>normalize_path spec-guided tests</h4>
+<ul>
+<li><code>test_norm_absolute_simple</code></li>
+<li><code>test_norm_relative_simple</code></li>
+<li><code>test_norm_collapse_slashes</code></li>
+<li><code>test_norm_eliminate_dot_segments</code></li>
+<li><code>test_norm_parent_directory</code></li>
+<li><code>test_norm_parent_above_root</code></li>
+<li><code>test_norm_trailing_slash</code></li>
+<li><code>test_norm_empty_and_dot</code></li>
+<li><code>test_norm_complex_combination</code></li>
+<li><code>test_norm_parametrized</code> (parametrized with 6 cases)</li>
+</ul>
+<p>Example test that exercises <code>.</code> and <code>..</code> together:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_norm_complex_combination</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test complex combination of rules.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">normalize_path</span><span class="p">(</span><span class="s2">&quot;/a//b/./c/../d/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;/a/b/d&quot;</span>
+    <span class="k">assert</span> <span class="n">normalize_path</span><span class="p">(</span><span class="s2">&quot;a/../b/./c&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;b/c&quot;</span>
+</code></pre></div>
+
+<h4>evaluate_rpn spec-guided tests</h4>
+<ul>
+<li><code>test_rpn_simple_addition</code></li>
+<li><code>test_rpn_mixed_operations</code></li>
+<li><code>test_rpn_negative_numbers</code></li>
+<li><code>test_rpn_division_truncate_positive</code></li>
+<li><code>test_rpn_division_truncate_negative</code></li>
+<li><code>test_rpn_complex_expression</code></li>
+<li><code>test_rpn_stack_underflow</code></li>
+<li><code>test_rpn_extra_operands</code></li>
+<li><code>test_rpn_division_by_zero</code></li>
+<li><code>test_rpn_invalid_token</code></li>
+<li><code>test_rpn_parametrized</code> (parametrized with 4 cases)</li>
+</ul>
+<p>Example test that checks truncation toward zero with negative operands:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_rpn_division_truncate_negative</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test division truncates toward zero (negative case).&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;-7&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="s2">&quot;-3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span>
+</code></pre></div>
+
+<p>Example test for invalid expression:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_rpn_stack_underflow</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test invalid expression: stack underflow.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Too few operands&quot;</span><span class="p">):</span>
+        <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">])</span>
+</code></pre></div>
+
+<h3>Coverage Results</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Old Stmt %</th>
+<th>New Stmt %</th>
+<th>Old Branch %</th>
+<th>New Branch %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>normalize_path</td>
+<td>90.0%</td>
+<td>90.0%</td>
+<td>85.7%</td>
+<td>85.7%</td>
+</tr>
+<tr>
+<td>evaluate_rpn</td>
+<td>81.5%</td>
+<td>100.0%</td>
+<td>77.8%</td>
+<td>94.4%</td>
+</tr>
+</tbody>
+</table>
+<h4>Coverage Report Screenshots</h4>
+<p><strong>normalize_path coverage report:</strong></p>
+<p><img alt="normalize_path coverage" src="coverage_reports/normalize_path/ss.png" /></p>
+<p><strong>evaluate_rpn coverage report:</strong></p>
+<p><img alt="evaluate_rpn coverage" src="coverage_reports/evaluate_rpn/ss.png" /></p>
+<h3>Case-Specific Insights</h3>
+<h4>normalize_path</h4>
+<p>Coverage did not increase because the spec-guided tests encode the same behaviors already exercised by Exercise 2 baseline tests. The baseline tests already covered absolute vs relative path handling, <code>.</code> and <code>..</code> segment resolution, and trailing slash rules. For example, the spec assertion <code>assert (res.endswith('/') == (res == '/'))</code> is verified by baseline tests that check <code>normalize_path("/a/") == "/a"</code> and <code>normalize_path("/") == "/"</code>. The spec-guided test <code>test_norm_trailing_slash</code> exercises the same code paths:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_norm_trailing_slash</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test trailing slash rules (only root can have trailing slash).&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">normalize_path</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span>
+    <span class="k">assert</span> <span class="n">normalize_path</span><span class="p">(</span><span class="s2">&quot;/a/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;/a&quot;</span>
+    <span class="k">assert</span> <span class="n">normalize_path</span><span class="p">(</span><span class="s2">&quot;a/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span>
+</code></pre></div>
+
+<h4>evaluate_rpn</h4>
+<p>Coverage improved significantly because spec-guided tests targeted error handling and truncation semantics that baseline tests missed. The specification for truncation toward zero (Spec 3: <code>assert (tokens == ["7", "3", "/"] and res == 2)</code>) led to tests that exercise the division branch with edge cases:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_rpn_division_truncate_negative</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test division truncates toward zero (negative case).&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;-7&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="s2">&quot;-3&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span>
+</code></pre></div>
+
+<p>Additionally, the specification for invalid expressions (Spec 6) motivated tests for error conditions that were not fully covered:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_rpn_stack_underflow</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test invalid expression: stack underflow.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Too few operands&quot;</span><span class="p">):</span>
+        <span class="n">evaluate_rpn</span><span class="p">([</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">])</span>
+</code></pre></div>
+
+<p>These tests exercise the error-handling branches in the implementation that the baseline tests did not fully cover.</p>
+<h2>Summary</h2>
+<h3>Specification Accuracy</h3>
+<ul>
+<li><strong>normalize_path</strong>: 50.0% accuracy (4/8 correct)</li>
+<li><strong>evaluate_rpn</strong>: 75.0% accuracy (6/8 correct)</li>
+</ul>
+<h3>Coverage Improvement</h3>
+<ul>
+<li><strong>normalize_path</strong>: No improvement (already well-tested baseline)</li>
+<li><strong>evaluate_rpn</strong>: Significant improvement (+18.5% line, +16.6% branch)</li>
+</ul>
+<h2>Deliverables</h2>
+<p>All deliverables are available in the <code>a3/</code> directory:</p>
+<ul>
+<li><strong>LLM prompts for spec generation</strong>: Included in Part 1 for each problem</li>
+<li><strong>Generated assertions before correction</strong>: Included in Part 1 for each problem</li>
+<li><strong>Accuracy rates</strong>: 50.0% (normalize_path), 75.0% (evaluate_rpn)</li>
+<li><strong>Tables of incorrect assertions</strong>: Included in Part 1 for each problem with issues and corrected versions</li>
+<li><strong>LLM prompts for test generation</strong>: Included in Part 2 for each problem</li>
+<li><strong>Lists of spec-guided tests</strong>: Included in Part 2 for each problem</li>
+<li><strong>Before/after coverage table</strong>: Included in Part 2</li>
+<li><strong>Case-specific insights</strong>: Included in Part 2 for each problem</li>
+<li><strong>Specifications</strong>: <code>a3/specs/normalize_path_specs.py</code>, <code>a3/specs/evaluate_rpn_specs.py</code></li>
+<li><strong>Spec-guided tests</strong>: <code>a3/tests/spec_guided/normalize_path/test_spec_norm.py</code>, <code>a3/tests/spec_guided/evaluate_rpn/test_spec_rpn.py</code></li>
+<li><strong>Coverage reports</strong>: <code>a3/coverage_reports/</code> (HTML and XML) or use <code>a3/run_coverage.py</code> to regenerate</li>
+<li><strong>Coverage results</strong>: <code>a3/coverage_results.json</code></li>
+<li><strong>This report</strong>: <code>a3/ASSIGNMENT3_REPORT.md</code></li>
+</ul>
+<h2>Repository Structure</h2>
+<div class="codehilite"><pre><span></span><code>a3/
+├── specs/
+│   ├── normalize_path_specs.py
+│   └── evaluate_rpn_specs.py
+├── tests/
+│   └── spec_guided/
+│       ├── normalize_path/
+│       │   └── test_spec_norm.py
+│       └── evaluate_rpn/
+│           └── test_spec_rpn.py
+├── coverage_reports/
+│   ├── normalize_path/
+│   └── evaluate_rpn/
+├── coverage_results.json
+└── ASSIGNMENT3_REPORT.md
+</code></pre></div>
+
+<p>Repository link: https://github.com/shivraj-S-bhatti/520-assignment-1</p>
+<p>The GitHub repository contains:
+- Source code of problems (<code>a2/src/normalize_path.py</code>, <code>a2/src/evaluate_rpn.py</code>)
+- Test files: baseline tests (<code>tests/test_*.py</code>) and spec-guided tests (<code>a3/tests/spec_guided/</code>)
+- Generated and revised assertions (<code>a3/specs/</code>)
+- Coverage reports (HTML/XML in <code>a3/coverage_reports/</code>) or instructions to regenerate using <code>a3/run_coverage.py</code></p>
+<h2>Instructions to Reproduce</h2>
+<ol>
+<li>
+<p><strong>Run baseline coverage</strong> (from Assignment 2):
+   <code>bash
+   cd a2
+   python3 scripts/run_baseline_coverage_gemini.py</code></p>
+</li>
+<li>
+<p><strong>Run spec-guided test coverage</strong>:
+   <code>bash
+   cd /path/to/project
+   python3 a3/run_coverage.py</code></p>
+</li>
+<li>
+<p><strong>View coverage reports</strong>:</p>
+</li>
+<li>HTML reports: <code>a3/coverage_reports/&lt;problem&gt;/htmlcov/index.html</code></li>
+<li>XML reports: <code>a3/coverage_reports/&lt;problem&gt;/coverage.xml</code></li>
+</ol>
+<hr />
+</body>
+</html>
